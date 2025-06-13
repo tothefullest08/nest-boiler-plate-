@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
-import { AggregateRootEntity } from '@common/entity/sub-domain.entity';
+import { AggregateRootEntity } from '@common/entity/aggregate-root.entity';
 
 @Entity('keyword_notification')
 export class KeywordNotification extends AggregateRootEntity {

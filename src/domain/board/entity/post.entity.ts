@@ -1,8 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
-import { AggregateRootEntity } from '@common/entity/sub-domain.entity';
 import { Logger } from '@nestjs/common';
 import { InternalException } from '@common/exception/internal.exception';
 import { ErrorTypeEnum } from '@common/exception/error.enum';
+import { AggregateRootEntity } from '@common/entity/aggregate-root.entity';
 
 @Entity('post')
 export class Post extends AggregateRootEntity {
