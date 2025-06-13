@@ -23,43 +23,43 @@ import { UpdatePostRequest } from '@presentation/board/dto/update-post.request';
 
 export class BoardMapper {
   static toCreatePostCommand(dto: CreatePostRequest): CreatePostCommand {
-    const command = new CreatePostCommand();
-    command.title = dto.title;
-    command.content = dto.content;
-    command.authorName = dto.authorName;
-    command.password = dto.password;
-    return command;
+    return new CreatePostCommand({
+      title: dto.title,
+      content: dto.content,
+      authorName: dto.authorName,
+      password: dto.password,
+    });
   }
 
   static toUpdatePostCommand(id: number, dto: UpdatePostRequest): UpdatePostCommand {
-    const command = new UpdatePostCommand();
-    command.id = id;
-    command.title = dto.title;
-    command.content = dto.content;
-    command.password = dto.password;
-    return command;
+    return new UpdatePostCommand({
+      id: id,
+      title: dto.title,
+      content: dto.content,
+      password: dto.password,
+    });
   }
 
   static toDeletePostCommand(id: number, dto: DeleteRequest): DeletePostCommand {
-    const command = new DeletePostCommand();
-    command.id = id;
-    command.password = dto.password;
-    return command;
+    return new DeletePostCommand({
+      id: id,
+      password: dto.password,
+    });
   }
 
   static toGetPostCommand(id: number): GetPostCommand {
-    const command = new GetPostCommand();
-    command.id = id;
-    return command;
+    return new GetPostCommand({
+      id: id,
+    });
   }
 
   static toListPostsCriteria(dto: ListPostsRequest): ListPostsCriteria {
-    const criteria = new ListPostsCriteria();
-    criteria.page = dto.page;
-    criteria.pageSize = dto.pageSize;
-    criteria.searchAuthor = dto.searchAuthor;
-    criteria.searchTitle = dto.searchTitle;
-    return criteria;
+    return new ListPostsCriteria({
+      page: dto.page,
+      pageSize: dto.pageSize,
+      searchAuthor: dto.searchAuthor,
+      searchTitle: dto.searchTitle,
+    });
   }
 
   static toPostResponse(entity: Post): PostResponse {
@@ -84,37 +84,37 @@ export class BoardMapper {
   }
 
   static toCreateCommentCommand(postId: number, dto: CreateCommentRequest): CreateCommentCommand {
-    const command = new CreateCommentCommand();
-    command.postId = postId;
-    command.content = dto.content;
-    command.authorName = dto.authorName;
-    command.password = dto.password;
-    command.parentId = dto.parentId;
-    return command;
+    return new CreateCommentCommand({
+      postId: postId,
+      content: dto.content,
+      authorName: dto.authorName,
+      password: dto.password,
+      parentId: dto.parentId,
+    });
   }
 
   static toUpdateCommentCommand(id: number, dto: UpdateCommentRequest): UpdateCommentCommand {
-    const command = new UpdateCommentCommand();
-    command.id = id;
-    command.content = dto.content;
-    command.password = dto.password;
-    return command;
+    return new UpdateCommentCommand({
+      id: id,
+      content: dto.content,
+      password: dto.password,
+    });
   }
 
   static toDeleteCommentCommand(id: number, dto: DeleteRequest): DeleteCommentCommand {
-    const command = new DeleteCommentCommand();
-    command.id = id;
-    command.password = dto.password;
-    return command;
+    return new DeleteCommentCommand({
+      id: id,
+      password: dto.password,
+    });
   }
 
   static toListCommentsCriteria(postId: number, dto: ListCommentsRequest): ListCommentsCriteria {
-    const criteria = new ListCommentsCriteria();
-    criteria.postId = postId;
-    criteria.page = dto.page;
-    criteria.pageSize = dto.pageSize;
-    criteria.parentId = dto.parentId;
-    return criteria;
+    return new ListCommentsCriteria({
+      postId: postId,
+      page: dto.page,
+      pageSize: dto.pageSize,
+      parentId: dto.parentId,
+    });
   }
 
   static toCommentResponse(entity: Comment): CommentResponse {
