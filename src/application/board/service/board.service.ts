@@ -15,6 +15,7 @@ import { Comment } from '@domain/board/entity/comment.entity';
 import * as bcrypt from 'bcrypt';
 import { InternalException } from '@common/exception/internal.exception';
 import { ErrorTypeEnum } from '@common/exception/error.enum';
+import { KeywordNotificationRepository } from '@domain/board/repository/keyword-notification.repository';
 
 @Injectable()
 export class BoardService {
@@ -26,12 +27,20 @@ export class BoardService {
     private readonly postRepository: PostRepository,
     @Inject('CommentRepository')
     private readonly commentRepository: CommentRepository,
+    @Inject('KeywordNotificationRepository')
+    private readonly keywordNotificationRepository: KeywordNotificationRepository,
   ) {}
 
   // 게시글 생성
   async createPost(command: CreatePostCommand): Promise<Post> {
     const hash = await bcrypt.hash(command.password, this.SALT_ROUNDS);
     const post = new Post(command.title, command.content, command.authorName, hash);
+
+    // 메세징큐 등을 활용하여 비동기로 처리되게끔 고도화 필요
+    // [주의] 아래 방식은 소규모/PoC에서만 사용 가능하며, 키워드가 많아지면 절대 사용하면 안 됩니다.
+    // 대규모 서비스에서는 반드시 역색인 기반 검색엔진(예: ElasticSearch) 도입이 필요합니다.
+    await this.triggerKeywordNotification(command.content);
+
     return this.postRepository.save(post);
   }
 
@@ -76,6 +85,12 @@ export class BoardService {
   async createComment(command: CreateCommentCommand): Promise<Comment> {
     const hash = await bcrypt.hash(command.password, this.SALT_ROUNDS);
     const comment = new Comment(command.postId, command.content, command.authorName, hash, command.parentId);
+
+    // 메세징큐 등을 활용하여 비동기로 처리되게끔 고도화 필요
+    // [주의] 아래 방식은 소규모/PoC에서만 사용 가능하며, 키워드가 많아지면 절대 사용하면 안 됩니다.
+    // 대규모 서비스에서는 반드시 역색인 기반 검색엔진(예: ElasticSearch) 도입이 필요합니다.
+    await this.triggerKeywordNotification(command.content);
+
     return this.commentRepository.save(comment);
   }
 
@@ -104,5 +119,38 @@ export class BoardService {
   // 댓글 목록 조회 (페이징/트리)
   async listComments(criteria: ListCommentsCriteria): Promise<{ data: Comment[]; total: number }> {
     return this.commentRepository.findByPostId(criteria.postId, criteria);
+  }
+
+  // [주의] 아래 방식은 소규모/PoC에서만 사용 가능하며, 키워드가 많아지면 절대 사용하면 안 됩니다.
+  // 대규모 서비스에서는 반드시 역색인 기반 검색엔진(예: ElasticSearch) 도입이 필요합니다.
+  private async triggerKeywordNotification(content: any) {
+    const keywordNotifications = await this.keywordNotificationRepository.findAll();
+    const text = this.extractAllTextFromContent(content);
+
+    for (const { authorName, keyword } of keywordNotifications) {
+      if (text.includes(keyword)) {
+        this.sendKeywordNotification(authorName, keyword);
+      }
+    }
+  }
+
+  private sendKeywordNotification(authorName: string, keyword: string) {
+    this.logger.log(`[알림] ${authorName}님이 등록한 키워드 "${keyword}"가 포함된 게시글/댓글이 등록됨`);
+  }
+
+  private extractAllTextFromContent(content: any): string {
+    let result = '';
+    function traverse(value: any) {
+      if (typeof value === 'string') {
+        result += value + ' ';
+      } else if (Array.isArray(value)) {
+        value.forEach(traverse);
+      } else if (typeof value === 'object' && value !== null) {
+        Object.values(value).forEach(traverse);
+      }
+    }
+
+    traverse(content);
+    return result.trim();
   }
 }
