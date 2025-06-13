@@ -1,5 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 import { AggregateRootEntity } from '@common/entity/sub-domain.entity';
+import { Logger } from '@nestjs/common';
+import { InternalException } from '@common/exception/internal.exception';
+import { ErrorTypeEnum } from '@common/exception/error.enum';
 
 @Entity('post')
 export class Post extends AggregateRootEntity {
@@ -9,6 +12,7 @@ export class Post extends AggregateRootEntity {
     this.content = content;
     this.authorName = authorName;
     this.password = password;
+    this.logger = new Logger(Post.name);
   }
 
   @PrimaryGeneratedColumn('increment')
@@ -26,23 +30,23 @@ export class Post extends AggregateRootEntity {
   @Column({ type: 'varchar', length: 255, nullable: false, name: 'password' })
   password: string;
 
-  update(title: string, content: any, password: string, hashFn: (pw: string) => string) {
-    if (!this.verifyPassword(password, hashFn)) {
-      throw new Error('비밀번호가 일치하지 않습니다');
+  private readonly logger: Logger;
+
+  update(title: string, content: any, password: string, compareFn: (plain: string, hash: string) => boolean) {
+    if (!compareFn(password, this.password)) {
+      this.logger.error(`게시글 수정 실패: 비밀번호 불일치 (postId: ${this.id})`);
+      throw new InternalException(ErrorTypeEnum.UNAUTHORIZED_ERROR, '비밀번호가 일치하지 않습니다');
     }
     this.title = title;
     this.content = content;
   }
 
-  softDelete(password: string, hashFn: (pw: string) => string) {
-    if (!this.verifyPassword(password, hashFn)) {
-      throw new Error('비밀번호가 일치하지 않습니다');
+  softDelete(password: string, compareFn: (plain: string, hash: string) => boolean) {
+    if (!compareFn(password, this.password)) {
+      this.logger.error(`게시글 삭제 실패: 비밀번호 불일치 (postId: ${this.id})`);
+      throw new InternalException(ErrorTypeEnum.UNAUTHORIZED_ERROR, '비밀번호가 일치하지 않습니다');
     }
     this.deletedAt = new Date();
-  }
-
-  verifyPassword(password: string, hashFn: (pw: string) => string): boolean {
-    return this.password === hashFn(password);
   }
 
   isDeleted(): boolean {

@@ -33,7 +33,7 @@ export class BoardMapper {
 
   static toUpdatePostCommand(id: number, dto: UpdatePostRequest): UpdatePostCommand {
     return new UpdatePostCommand({
-      id: id,
+      id: Number(id),
       title: dto.title,
       content: dto.content,
       password: dto.password,
@@ -42,21 +42,21 @@ export class BoardMapper {
 
   static toDeletePostCommand(id: number, dto: DeleteRequest): DeletePostCommand {
     return new DeletePostCommand({
-      id: id,
+      id: Number(id),
       password: dto.password,
     });
   }
 
   static toGetPostCommand(id: number): GetPostCommand {
     return new GetPostCommand({
-      id: id,
+      id: Number(id),
     });
   }
 
   static toListPostsCriteria(dto: ListPostsRequest): ListPostsCriteria {
     return new ListPostsCriteria({
-      page: dto.page,
-      pageSize: dto.pageSize,
+      page: Number(dto.page),
+      pageSize: Number(dto.pageSize),
       searchAuthor: dto.searchAuthor,
       searchTitle: dto.searchTitle,
     });
@@ -78,14 +78,14 @@ export class BoardMapper {
     return new PaginatedPostResponse({
       data: result.data.map((post) => BoardMapper.toPostResponse(post)),
       total: result.total,
-      page: dto.page,
-      pageSize: dto.pageSize,
+      page: Number(dto.page),
+      pageSize: Number(dto.pageSize),
     });
   }
 
   static toCreateCommentCommand(postId: number, dto: CreateCommentRequest): CreateCommentCommand {
     return new CreateCommentCommand({
-      postId: postId,
+      postId: Number(postId),
       content: dto.content,
       authorName: dto.authorName,
       password: dto.password,
@@ -95,7 +95,7 @@ export class BoardMapper {
 
   static toUpdateCommentCommand(id: number, dto: UpdateCommentRequest): UpdateCommentCommand {
     return new UpdateCommentCommand({
-      id: id,
+      id: Number(id),
       content: dto.content,
       password: dto.password,
     });
@@ -103,16 +103,16 @@ export class BoardMapper {
 
   static toDeleteCommentCommand(id: number, dto: DeleteRequest): DeleteCommentCommand {
     return new DeleteCommentCommand({
-      id: id,
+      id: Number(id),
       password: dto.password,
     });
   }
 
   static toListCommentsCriteria(postId: number, dto: ListCommentsRequest): ListCommentsCriteria {
     return new ListCommentsCriteria({
-      postId: postId,
-      page: dto.page,
-      pageSize: dto.pageSize,
+      postId: Number(postId),
+      page: Number(dto.page),
+      pageSize: Number(dto.pageSize),
       parentId: dto.parentId,
     });
   }
@@ -134,8 +134,8 @@ export class BoardMapper {
     return new PaginatedCommentResponse({
       data: result.data.map((comment) => BoardMapper.toCommentResponse(comment)),
       total: result.total,
-      page: dto.page,
-      pageSize: dto.pageSize,
+      page: Number(dto.page),
+      pageSize: Number(dto.pageSize),
     });
   }
 }

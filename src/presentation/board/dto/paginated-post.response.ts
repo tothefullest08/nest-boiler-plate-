@@ -5,9 +5,11 @@ import { Expose, Type } from 'class-transformer';
 import { IsArray, IsNumber, ValidateNested } from 'class-validator';
 
 export class PaginatedPostResponse {
-  constructor(partial: Partial<PaginatedPostResponse>) {
-    const validated = plainToClassWithValidation(PaginatedPostResponse, partial, { excludeExtraneousValues: true });
-    Object.assign(this, validated);
+  constructor(partial?: Partial<PaginatedPostResponse>) {
+    if (partial) {
+      const validated = plainToClassWithValidation(PaginatedPostResponse, partial, { excludeExtraneousValues: true });
+      Object.assign(this, validated);
+    }
   }
 
   @ApiProperty({ type: [PostResponse], description: '게시글 목록' })

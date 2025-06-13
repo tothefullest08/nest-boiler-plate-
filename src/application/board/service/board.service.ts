@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { PostRepository } from '@domain/board/repository/post.repository';
 import { CommentRepository } from '@domain/board/repository/comment.repository';
 import { CreatePostCommand } from '@application/board/dto/create-post.command';
@@ -13,10 +13,13 @@ import { ListCommentsCriteria } from '@application/board/dto/list-comments.crite
 import { Post } from '@domain/board/entity/post.entity';
 import { Comment } from '@domain/board/entity/comment.entity';
 import * as bcrypt from 'bcrypt';
+import { InternalException } from '@common/exception/internal.exception';
+import { ErrorTypeEnum } from '@common/exception/error.enum';
 
 @Injectable()
 export class BoardService {
   readonly SALT_ROUNDS = 10;
+  private readonly logger = new Logger(BoardService.name);
 
   constructor(
     @Inject('PostRepository')
@@ -35,16 +38,22 @@ export class BoardService {
   // 게시글 수정
   async updatePost(command: UpdatePostCommand): Promise<Post> {
     const post = await this.postRepository.findById(command.id);
-    if (!post) throw new NotFoundException('존재하지 않는 게시글입니다');
-    post.update(command.title, command.content, command.password, (pw) => bcrypt.hashSync(pw, this.SALT_ROUNDS));
+    if (!post) {
+      this.logger.error(`게시글 수정 실패: 존재하지 않는 게시글 (id: ${command.id})`);
+      throw new InternalException(ErrorTypeEnum.NOT_FOUND_ERROR, '존재하지 않는 게시글입니다');
+    }
+    post.update(command.title, command.content, command.password, (plain, hash) => bcrypt.compareSync(plain, hash));
     return this.postRepository.save(post);
   }
 
   // 게시글 삭제
   async deletePost(command: DeletePostCommand): Promise<void> {
     const post = await this.postRepository.findById(command.id);
-    if (!post) throw new NotFoundException('존재하지 않는 게시글입니다');
-    post.softDelete(command.password, (pw) => bcrypt.hashSync(pw, this.SALT_ROUNDS));
+    if (!post) {
+      this.logger.error(`게시글 삭제 실패: 존재하지 않는 게시글 (id: ${command.id})`);
+      throw new InternalException(ErrorTypeEnum.NOT_FOUND_ERROR, '존재하지 않는 게시글입니다');
+    }
+    post.softDelete(command.password, (plain, hash) => bcrypt.compareSync(plain, hash));
     await this.postRepository.save(post);
   }
 
@@ -56,7 +65,10 @@ export class BoardService {
   // 게시글 상세 조회
   async getPost(command: GetPostCommand): Promise<Post> {
     const post = await this.postRepository.findById(command.id);
-    if (!post) throw new NotFoundException('존재하지 않는 게시글입니다');
+    if (!post) {
+      this.logger.error(`게시글 조회 실패: 존재하지 않는 게시글 (id: ${command.id})`);
+      throw new InternalException(ErrorTypeEnum.NOT_FOUND_ERROR, '존재하지 않는 게시글입니다');
+    }
     return post;
   }
 
@@ -70,16 +82,22 @@ export class BoardService {
   // 댓글 수정
   async updateComment(command: UpdateCommentCommand): Promise<Comment> {
     const comment = await this.commentRepository.findById(command.id);
-    if (!comment) throw new NotFoundException('존재하지 않는 댓글입니다');
-    comment.update(command.content, command.password, (pw) => bcrypt.hashSync(pw, this.SALT_ROUNDS));
+    if (!comment) {
+      this.logger.error(`댓글 수정 실패: 존재하지 않는 댓글 (id: ${command.id})`);
+      throw new NotFoundException('존재하지 않는 댓글입니다');
+    }
+    comment.update(command.content, command.password, (plain, hash) => bcrypt.compareSync(plain, hash));
     return this.commentRepository.save(comment);
   }
 
   // 댓글 삭제
   async deleteComment(command: DeleteCommentCommand): Promise<void> {
     const comment = await this.commentRepository.findById(command.id);
-    if (!comment) throw new NotFoundException('존재하지 않는 댓글입니다');
-    comment.softDelete(command.password, (pw) => bcrypt.hashSync(pw, this.SALT_ROUNDS));
+    if (!comment) {
+      this.logger.error(`댓글 삭제 실패: 존재하지 않는 댓글 (id: ${command.id})`);
+      throw new NotFoundException('존재하지 않는 댓글입니다');
+    }
+    comment.softDelete(command.password, (plain, hash) => bcrypt.compareSync(plain, hash));
     await this.commentRepository.save(comment);
   }
 

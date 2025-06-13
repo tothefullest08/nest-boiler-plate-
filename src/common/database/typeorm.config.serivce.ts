@@ -1,5 +1,4 @@
 import { TypeOrmModuleOptions, TypeOrmOptionsFactory } from '@nestjs/typeorm';
-
 import { ConfigService } from '@nestjs/config';
 import { Injectable } from '@nestjs/common';
 import { NODE_ENV } from '@common/enum/config.enum';
@@ -26,6 +25,7 @@ export class TypeORMConfig implements TypeOrmOptionsFactory {
       username,
       password,
       database,
+      entities: [__dirname + '/../../domain/**/*.entity.{js,ts}'],
       logging: isLocal ? ['query', 'schema', 'error', 'warn', 'info', 'log', 'migration'] : false,
       // 테이블명, 필드명을 어떤 형식으로 생성할지 알려줍니다.
       synchronize,

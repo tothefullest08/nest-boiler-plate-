@@ -17,7 +17,11 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "typeorm": "node_modules/.bin/env-cmd -f .env ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
+    "typeorm:migration:run": "npm run typeorm migration:run -- -d migration-ormconfig.ts",
+    "typeorm:migration:create": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli migration:create migrations/$npm_config_name",
+    "typeorm:migration:revert": "npm run typeorm migration:revert -- -d migration-ormconfig.ts"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
@@ -32,6 +36,9 @@
     "class-validator": "^0.14.2",
     "eslint-plugin-unused-imports": "^4.1.4",
     "mysql2": "^3.14.1",
+    "nestjs-pino": "^4.4.0",
+    "pino": "^9.7.0",
+    "pino-pretty": "^13.0.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
     "typeorm": "^0.3.24"
@@ -46,6 +53,7 @@
     "@types/supertest": "^2.0.12",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
+    "env-cmd": "^10.1.0",
     "eslint": "^8.42.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",

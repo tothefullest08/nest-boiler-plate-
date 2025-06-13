@@ -4,13 +4,15 @@ import { Expose } from 'class-transformer';
 import { IsString, IsNumber, IsDate } from 'class-validator';
 
 export class PostResponse {
-  constructor(partial: Partial<PostResponse>) {
-    Object.assign(
-      this,
-      plainToClassWithValidation(PostResponse, partial, {
-        excludeExtraneousValues: true,
-      }),
-    );
+  constructor(partial?: Partial<PostResponse>) {
+    if (partial) {
+      Object.assign(
+        this,
+        plainToClassWithValidation(PostResponse, partial, {
+          excludeExtraneousValues: true,
+        }),
+      );
+    }
   }
 
   @ApiProperty({ description: '게시글 ID' })

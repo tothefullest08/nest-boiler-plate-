@@ -5,9 +5,11 @@ import { Expose, Type } from 'class-transformer';
 import { IsArray, IsNumber, ValidateNested } from 'class-validator';
 
 export class PaginatedCommentResponse {
-  constructor(partial: Partial<PaginatedCommentResponse>) {
-    const validated = plainToClassWithValidation(PaginatedCommentResponse, partial, { excludeExtraneousValues: true });
-    Object.assign(this, validated);
+  constructor(partial?: Partial<PaginatedCommentResponse>) {
+    if (partial) {
+      const validated = plainToClassWithValidation(PaginatedCommentResponse, partial, { excludeExtraneousValues: true });
+      Object.assign(this, validated);
+    }
   }
 
   @ApiProperty({ type: [CommentResponse], description: '댓글 목록' })

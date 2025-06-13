@@ -4,13 +4,15 @@ import { Expose, Type } from 'class-transformer';
 import { IsString, IsNumber, IsDate, IsOptional, IsArray, ValidateNested } from 'class-validator';
 
 export class CommentResponse {
-  constructor(partial: Partial<CommentResponse>) {
-    Object.assign(
-      this,
-      plainToClassWithValidation(CommentResponse, partial, {
-        excludeExtraneousValues: true,
-      }),
-    );
+  constructor(partial?: Partial<CommentResponse>) {
+    if (partial) {
+      Object.assign(
+        this,
+        plainToClassWithValidation(CommentResponse, partial, {
+          excludeExtraneousValues: true,
+        }),
+      );
+    }
   }
 
   @ApiProperty({ description: '댓글 ID' })
