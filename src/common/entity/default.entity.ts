@@ -1,8 +1,8 @@
-import { BaseEntity, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { BaseEntity, CreateDateColumn, DeleteDateColumn, Entity, UpdateDateColumn } from 'typeorm';
 import { Expose } from 'class-transformer';
 
 @Entity()
-export class BaseEntity extends BaseEntity {
+export class DefaultEntity extends BaseEntity {
   @Expose()
   @DeleteDateColumn({ name: 'deleted_at', nullable: true })
   deletedAt: Date | null;

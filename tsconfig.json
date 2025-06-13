@@ -20,7 +20,6 @@
     "noEmitOnError": true,
     "noImplicitReturns": true,
     "strictFunctionTypes": true,
-    "strictPropertyInitialization": true,
     "noImplicitThis": true,
     "alwaysStrict": true,
     "resolveJsonModule": true,
