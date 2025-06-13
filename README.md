@@ -2,8 +2,8 @@
 
 ## 프로젝트 소개
 
-이 프로젝트는 **NestJS** 기반의 멀티 모듈 구조, 도메인 중심의 클린 아키텍처를 적용한 게시판(Bounded Context) 예제입니다.  
-주요 도메인은 **게시글(Post)**, **댓글(Comment)**, **키워드 알림(KeywordNotification)**이며, 각각이 독립적인 애그리거트 루트로 설계되어 있습니다.
+이 프로젝트는 NestJS 기반의 멀티 모듈 구조, 도메인 중심의 클린 아키텍처를 적용한 게시판(Bounded Context) 예제입니다.  
+주요 도메인은 게시글(Post), 댓글(Comment), 키워드 알림(KeywordNotification)이며, 각각이 독립적인 애그리거트 루트로 설계되어 있습니다.
 
 ---
 
@@ -38,6 +38,13 @@ npm install
 - TypeORM migration을 실행해 테이블 및 샘플 데이터를 생성합니다.
   ```bash
   npm run typeorm:migration:run
+  ```
+
+### 5) 로컬 서버 실행
+- 1~4번이 모두 정상 완료 되었다면 서버를 실행합니다.
+- http://localhost:3000에서 API를 확인할 수 있습니다.
+  ```bash
+  npm run start
   ```
 
 ---
